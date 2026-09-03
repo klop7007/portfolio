@@ -1,0 +1,60 @@
+name: Build portfolio PDF
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "projects/**"
+      - "scripts/**"
+      - ".github/workflows/build-pdf.yml"
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: "포함할 프로젝트 (공백 구분, 비우면 전체). 예: ir-center nex-platform"
+        required: false
+        default: ""
+      output:
+        description: "출력 파일명"
+        required: false
+        default: "portfolio.pdf"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc, weasyprint, Korean fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq pandoc weasyprint fonts-noto-cjk fonts-noto-cjk-extra
+          fc-cache -f >/dev/null
+
+      - name: Build PDF
+        env:
+          OUT: ${{ github.event.inputs.output || 'portfolio.pdf' }}
+          GITHUB_URL: https://github.com/${{ github.repository_owner }}
+        run: |
+          chmod +x scripts/build-pdf.sh
+          scripts/build-pdf.sh ${{ github.event.inputs.projects }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.output || 'portfolio.pdf' }}
+          path: ${{ github.event.inputs.output || 'portfolio.pdf' }}
+
+      # main 에 push 될 때만 'latest' 릴리스를 덮어써서 항상 최신 PDF 한 개 유지
+      - name: Publish to 'latest' release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest portfolio PDF
+          body: "main 브랜치 최신 커밋 기준 자동 생성 (${{ github.sha }})"
+          files: portfolio.pdf
+          prerelease: false
