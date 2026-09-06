@@ -29,15 +29,15 @@ Browser ──► Apache :443 (TLS) ──► Next.js :3001
                                      ├─ Server Action / Route Handler ─┐
                                      └─ Client Component (폼 상태만)   │
                                                                        ▼
-                                          lib/*.ts  (DAL, server-only) ──► MSSQL 2014
-                                          lib/session.ts   httpOnly JWT
-                                          lib/portone.ts   본인인증 API
-                                          lib/mail.ts      SMTP
+                                          데이터 접근 계층 (server-only) ──► MSSQL 2014
+                                          세션 모듈      httpOnly JWT
+                                          본인인증 모듈  PortOne API
+                                          메일 모듈      SMTP
 ```
 
 **3-tier 데이터 흐름을 강제하는 규칙**을 두고 개발했습니다.
 
-1. **DAL (`lib/*.ts`)** — `server-only` 로 클라이언트 import 차단. 모든 쿼리는 파라미터 바인딩, 문자열 보간 금지
+1. **데이터 접근 계층** — `server-only` 로 클라이언트 import 차단. 모든 쿼리는 파라미터 바인딩, 문자열 보간 금지
 2. **Server Action / Route Handler** — 클라이언트 인자를 믿지 않고 항상 서버에서 세션을 재검증한 뒤 DAL 호출, `revalidatePath` 로 캐시 무효화
 3. **Client Component** — 폼 상태만 관리, 결과는 Server Action 반환값으로 처리
 
@@ -53,16 +53,16 @@ Browser ──► Apache :443 (TLS) ──► Next.js :3001
 - 본인 식별자는 CI. 같은 CI 재가입은 인증 수단과 무관하게 차단(중복가입 방어), 운영 환경에서 CI 없는 가입은 거부
 - 초기에 카카오·네이버 OAuth 직접 연동과 KG이니시스 직접 연동을 거쳐 PortOne 으로 통합 — 연동처 3곳을 1곳으로 줄여 유지보수 비용 절감
 
-### 3-2. 세션 관리와 즉시 무효화 (Session Epoch)
+### 3-2. 세션 관리와 즉시 무효화
 
-- httpOnly 쿠키 + jose JWT(HS256). 페이로드에 `kind: admin | user` 로 관리자·회원 세션 분리
-- **JWT 의 한계(발급 후 취소 불가)를 DB `session_epoch` 컬럼으로 보완** — 회원 정지·비밀번호 변경 시 epoch +1 → 기존 토큰 즉시 무효
-- 고위험 액션(글 삭제, 관리자 답변, 게시판 설정, 회원 상태 변경)에만 epoch 검증을 추가해 일반 조회 성능은 유지
-- 구버전 토큰(epoch 없음)은 graceful 통과시켜 배포 시 강제 로그아웃 없이 전환
+- httpOnly 쿠키 + jose JWT(HS256). 페이로드의 구분 값으로 관리자·회원 세션 분리
+- **JWT 의 한계(발급 후 취소 불가)를 DB 의 세션 버전 카운터로 보완** — 회원 정지·비밀번호 변경 시 카운터 +1 → 기존 토큰 즉시 무효
+- 고위험 액션(글 삭제, 관리자 답변, 게시판 설정, 회원 상태 변경)에만 카운터 검증을 추가해 일반 조회 성능은 유지
+- 구버전 토큰(카운터 없음)은 graceful 통과시켜 배포 시 강제 로그아웃 없이 전환
 
 ### 3-3. 비밀글 게시판 권한 모델
 
-- 목록과 상세 **양쪽에서 동일한 `resolvePostVisibility(board, post, viewer)` 판정 함수**를 사용해 우회 경로 차단
+- 목록과 상세 **양쪽에서 동일한 권한 판정 함수(게시판·글·열람자 → 공개 범위)**를 사용해 우회 경로 차단
 - 권한 부족 시 DAL 이 본문·답변을 **서버에서 NULL 로 마스킹**한 뒤 반환 — 클라이언트에 원문이 내려가지 않음
 - 작성자명 중간 마스킹(김민우 → 김*우), 관리자/IR 답변은 실명 표시
 - 원글/관리자 답변 depth 스레드 구조, soft delete
@@ -83,9 +83,9 @@ Browser ──► Apache :443 (TLS) ──► Next.js :3001
 |---|---|---|
 | CRITICAL | CWE-639 임의 계정 비밀번호 변경 가능 | 브릿지 토큰 기반으로 본인인증 결과와 대상 계정 강제 결합 |
 | HIGH | CWE-489 테스트용 폴백 식별자 운영 잔존 | 운영 환경에서 폴백 경로 제거 |
-| HIGH | CWE-613 비밀번호 변경 후 기존 세션 유지 | Session Epoch 도입 (3-2) |
+| HIGH | CWE-613 비밀번호 변경 후 기존 세션 유지 | 세션 버전 카운터 도입 (3-2) |
 | HIGH | CWE-307 인증 라우트 무차별 대입 방어 없음 | 슬라이딩 윈도우 rate-limit 추가 |
-| HIGH | CWE-613 관리자 세션 무효화 부재 | 관리자 테이블에도 epoch 적용 |
+| HIGH | CWE-613 관리자 세션 무효화 부재 | 관리자 세션에도 버전 카운터 적용 |
 
 ## 4. 운영과 배포
 
@@ -96,15 +96,14 @@ Browser ──► Apache :443 (TLS) ──► Next.js :3001
 
 ## 5. 개발 프로세스
 
-- Conventional Commits (`feat/fix/style/chore/docs`) 로 99건 커밋, `ir-maint` 브랜치 작업 후 `master` 병합
-- 아키텍처·금지 구문·보안 규칙을 `CLAUDE.md` 에 문서화하고 Claude Code 에이전트/훅을 프로젝트에 맞게 구성 — DB 접속 정보 자동 주입, 위험 명령 차단, 편집 후 규칙 리마인더 등을 훅으로 자동화해 AI 보조 개발의 안전장치 마련
+- Conventional Commits (`feat/fix/style/chore/docs`) 로 99건 커밋, 작업 브랜치 → 메인 브랜치 병합
+- 아키텍처·금지 구문·보안 규칙을 프로젝트 문서로 정리하고 Claude Code 에이전트/훅을 프로젝트에 맞게 구성 — DB 접속 정보 자동 주입, 위험 명령 차단, 편집 후 규칙 리마인더 등을 훅으로 자동화해 AI 보조 개발의 안전장치 마련
 
 ## 6. 성과
 
-
-- IR 웹사이트를 1인 풀스택으로 11주 만에 개발·배포, 인프라 추가 비용 0원.
-- 카카오·네이버·PASS·토스 인증 4종을 PortOne 1채널로 통합, 서버 검증으로 위조 차단.
-- 세션 즉시 폐기·비밀글 서버 마스킹 적용, 출시 후 인증 장애 0건.
+- 1인 풀스택으로 11주 만에 개발·배포, 기존 웹서버 합류로 인프라 추가 비용 0원
+- 카카오·네이버·PASS·토스 4종 인증을 PortOne 1채널로 통합 — 연동·유지보수 대상 3곳 → 1곳
+- 서버 측 검증(브릿지 토큰·세션 즉시 폐기·비밀글 마스킹)으로 출시 후 2개월간 인증 관련 장애 0건
 
 ## 7. 회고
 
