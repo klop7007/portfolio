@@ -35,7 +35,7 @@ else
   mapfile -t FILES < <(ls projects/*.md | sort -r)
 fi
 
-# 2) 표지 + 목차용 임시 마크다운
+# 2) 표지
 TMP="$(mktemp -d)"
 COVER="$TMP/00-cover.md"
 {
@@ -46,8 +46,15 @@ COVER="$TMP/00-cover.md"
   echo '</div>'
 } > "$COVER"
 
-# README 의 프로젝트 표를 "목차" 페이지로 재사용 (링크 제거)
-TOC="$TMP/01-toc.md"
+# 3) 자기소개 페이지 (profile.md 가 있으면 포함)
+PROFILE=""
+if [ -f profile.md ]; then
+  PROFILE="$TMP/01-profile.md"
+  { echo '<div class="page-break"></div>'; echo; cat profile.md; } > "$PROFILE"
+fi
+
+# 4) 프로젝트 목록 (README 의 표를 재사용, 링크 제거)
+TOC="$TMP/02-toc.md"
 {
   echo '<div class="page-break"></div>'
   echo
@@ -57,7 +64,7 @@ TOC="$TMP/01-toc.md"
     | sed -E 's/\[([^]]+)\]\([^)]+\)/\1/g'
 } > "$TOC"
 
-# 3) 각 프로젝트 앞에 페이지 나눔 삽입
+# 5) 각 프로젝트 앞에 페이지 나눔 삽입
 BODY=()
 for f in "${FILES[@]}"; do
   b="$TMP/$(basename "$f")"
@@ -65,8 +72,8 @@ for f in "${FILES[@]}"; do
   BODY+=("$b")
 done
 
-# 4) pandoc → weasyprint
-pandoc "$COVER" "$TOC" "${BODY[@]}" \
+# 6) pandoc → weasyprint
+pandoc "$COVER" ${PROFILE:+"$PROFILE"} "$TOC" "${BODY[@]}" \
   --from gfm+raw_html \
   --to html5 --standalone \
   --css scripts/pdf.css \
