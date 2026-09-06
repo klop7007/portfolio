@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "README.md"
+      - "profile.md"
       - "projects/**"
       - "scripts/**"
       - ".github/workflows/build-pdf.yml"
