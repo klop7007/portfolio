@@ -13,7 +13,7 @@ klio7007@naver.com · [github.com/klop7007/portfolio](https://github.com/klop700
 
 | 구분 | 기술 |
 |---|---|
-| Language | **Java** · JavaScript · VB.NET · Delphi · TypeScript · C# · Python |
+| Language | **Java** · JavaScript · VB.NET · Delphi · TypeScript · Python |
 | Backend | **Spring Framework(MVC)** · **eGovFrame** · **JSP** · **MyBatis/iBatis** · FastAPI |
 | Frontend | **jQuery** · **HTML5/CSS** · Next.js · Vue 3 |
 | Database | **MS SQL Server** · **Oracle** · PostgreSQL · MySQL(링크서버 연동) |
