@@ -24,7 +24,7 @@
   <tr><td nowrap><a href="projects/2026-08-erp-platform.md">통합 ERP 플랫폼 1단계</a></td><td nowrap>2026.08~</td><td>레거시 3종 통합 DB 이관 + FastAPI 조회 API + MCP 서버, 운영 배포 (진행 중)</td></tr>
   <tr><td nowrap><a href="projects/2026-08-attendance-dx.md">근태 연동 DX</a></td><td nowrap>2026.08~09</td><td>전자결재 신청서 구조화 → ERP 지각 판정 배치, 수기 대조 제거 (JSP · T-SQL)</td></tr>
   <tr><td nowrap><a href="projects/2026-07-fx-rate-collector.md">비고시환율 자동 수집</a></td><td nowrap>2026.07~08</td><td>은행 웹 수집 → ERP 적재 배치, 수동 입력 100% 자동화 (PowerShell · MSSQL)</td></tr>
-  <tr><td nowrap><a href="projects/2026-04-ir-center.md">IR Center</a></td><td nowrap>2026.04~07</td><td>본인인증 회원제 IR 사이트 1인 구축 · 배포 (Next.js 14 · MSSQL)</td></tr>
+  <tr><td nowrap><a href="projects/2026-04-ir-center.md">상장사 IR 웹 서비스</a></td><td nowrap>2026.04~07</td><td>본인인증 회원제 IR 사이트 1인 구축 · 배포 (Next.js 14 · MSSQL)</td></tr>
   <tr><td nowrap><a href="projects/2026-03-work-management.md">전사 업무관리 시스템</a></td><td nowrap>2026.03~04</td><td>M/M 가동률 대시보드 · 그룹웨어 인사 동기화, 공동 개발 (PostgreSQL · MSSQL)</td></tr>
   <tr><td nowrap><a href="projects/2026-01-groupware-modernization.md">그룹웨어 레거시 현대화</a></td><td nowrap>2026.01~02</td><td>JSP 380페이지 UI 전면 개편 + SQL Injection 제거, 무중단 전환 (Java · Spring · MyBatis)</td></tr>
 </table>
