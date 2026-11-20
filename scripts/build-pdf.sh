@@ -53,15 +53,15 @@ if [ -f profile.md ]; then
   { echo '<div class="page-break"></div>'; echo; cat profile.md; } > "$PROFILE"
 fi
 
-# 4) 프로젝트 목록 (README 의 표를 재사용, 링크 제거)
+# 4) 프로젝트 목록 (README 의 '## 프로젝트' 이하 표를 재사용, 링크 제거)
 TOC="$TMP/02-toc.md"
 {
   echo '<div class="page-break"></div>'
   echo
   echo '# 프로젝트 목록'
   echo
-  awk '/^\|/{print} /^\|/{seen=1} !/^\|/{if(seen) exit}' README.md \
-    | sed -E 's/\[([^]]+)\]\([^)]+\)/\1/g'
+  awk '/^## 프로젝트/{f=1; next} f{print}' README.md \
+    | sed -E 's/<a href="[^"]*">([^<]*)<\/a>/\1/g; s/\[([^]]+)\]\([^)]+\)/\1/g'
 } > "$TOC"
 
 # 5) 각 프로젝트 앞에 페이지 나눔 삽입
