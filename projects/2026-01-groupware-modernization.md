@@ -8,7 +8,7 @@
 |---|---|
 | 기간 | 2026.01 ~ 02 |
 | 역할 | 프로젝트 주관 · 1인 개발 (분석 · 설계 · 구현 · 현업 의견 수렴 · 반영) |
-| 스택 | Java 8 · Spring · MyBatis · JSP · jQuery · MS SQL Server 2014 · Tomcat |
+| 스택 | Java 8 · JSP · iBATIS · jQuery · MS SQL Server 2014 · Tomcat |
 | 규모 | JSP 380페이지 · 전자결재 양식 30종 |
 
 ---
@@ -28,7 +28,7 @@
 
 ### 3-1. 유지보수 · 보안
 
-- MyBatis 쿼리의 문자열 치환(`$param$`)을 파라미터 바인딩(`#param#`)으로 전환 → SQL Injection 제거, SQL 최적화
+- iBATIS 쿼리의 문자열 치환(`$param$`)을 파라미터 바인딩(`#param#`)으로 전환 → SQL Injection 제거, SQL 최적화
 - 세션 관리 강화: 중첩 iframe 안의 사용자 활동 감지, keepAlive 튜닝
 - 급여 모듈 NPE · null 처리 보완
 

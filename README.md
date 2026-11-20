@@ -7,7 +7,7 @@
 
 ## 핵심 역량
 
-- **그룹웨어 · 전자결재 개발/운영** — Java · JSP · Spring 기반 그룹웨어를 현업 요구 분석부터 화면 · 쿼리 · 프로시저 · 배치까지 개발하고 운영
+- **그룹웨어 · 전자결재 개발/운영** — Java · JSP 기반 그룹웨어를 현업 요구 분석부터 화면 · 쿼리 · 프로시저 · 배치까지 개발하고 운영
 - **시스템 연계** — 그룹웨어–ERP 전자결재 · 근태 연동, 인사 · 조직 데이터 동기화, 이기종 DB(MS SQL–MySQL) 연동, REST API 개발
 - **SQL · DB** — MS SQL Server · Oracle · PostgreSQL 쿼리 · 프로시저 개발과 튜닝, 데이터 이관 · 백업 · 복구
 - **운영 · 보안** — 장애 대응과 사용자 지원, 서버 · 방화벽 · 접근권한 관리, IT 감사 대응
@@ -33,7 +33,7 @@
   <tr><td nowrap><a href="projects/2026-07-fx-rate-collector.md">비고시환율 자동 수집</a></td><td nowrap>2026.07~08</td><td>은행 웹 수집 → ERP 적재 배치, 수동 입력 100% 자동화 (PowerShell · MSSQL)</td></tr>
   <tr><td nowrap><a href="projects/2026-04-ir-center.md">상장사 IR 웹 서비스</a></td><td nowrap>2026.04~07</td><td>본인인증 회원제 IR 사이트 1인 구축 · 배포 (Next.js 14 · MSSQL)</td></tr>
   <tr><td nowrap><a href="projects/2026-03-work-management.md">전사 업무관리 시스템</a></td><td nowrap>2026.03~04</td><td>M/M 가동률 대시보드 · 그룹웨어 인사 동기화, 공동 개발 (PostgreSQL · MSSQL)</td></tr>
-  <tr><td nowrap><a href="projects/2026-01-groupware-modernization.md">그룹웨어 레거시 현대화</a></td><td nowrap>2026.01~02</td><td>JSP 380페이지 UI 전면 개편 + SQL Injection 제거, 무중단 전환 (Java · Spring · MyBatis)</td></tr>
+  <tr><td nowrap><a href="projects/2026-01-groupware-modernization.md">그룹웨어 레거시 현대화</a></td><td nowrap>2026.01~02</td><td>JSP 380페이지 UI 전면 개편 + SQL Injection 제거, 무중단 전환 (Java · JSP · iBATIS)</td></tr>
 </table>
 
 ### 2023 ~ 2024 · 노브랜드
